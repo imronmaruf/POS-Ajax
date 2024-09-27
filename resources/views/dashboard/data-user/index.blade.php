@@ -1,6 +1,7 @@
 @extends('dashboard.layouts.main')
 
 @push('title')
+    User Data Management
 @endpush
 
 @push('css')
@@ -8,41 +9,253 @@
 
 @section('content')
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-xl-12">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">User Data</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">User Data</h5>
+                        <button id="tambahData" type="button" class="btn btn-primary">Add User</button>
+                    </div>
                 </div>
                 <div id="DataTables">
                     <div class="card-body">
                         <table id="table" class="table table-bordered table-striped dt-responsive nowrap">
                             <thead>
                                 <tr>
-                                    <th>No</th>
+                                    <th class="text-center">No</th>
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Role</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @foreach ($dataUser as $data)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $data->name }}</td>
-                                        <td>{{ $data->email }}</td>
-                                        <td>{{ $data->role }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
+                            <tbody></tbody>
                         </table>
-
                     </div>
                 </div>
             </div>
-
-
         </div><!--end col-->
     </div>
+
+    @include('dashboard.data-user.modal')
 @endsection
+
 @push('js')
+    <script>
+        $(document).ready(function() {
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            var table = $('#table').DataTable({
+                serverSide: true,
+                processing: true,
+                ajax: "{{ route('user-data.index') }}",
+                language: {
+                    emptyTable: `<div class="noresult" style="display: block;">
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" 
+                                        trigger="loop" 
+                                        colors="primary:#121331,secondary:#08a88a" 
+                                        style="width:75px;height:75px">
+                                </lord-icon>
+                                <h5 class="mt-2">Sorry! No Data Available</h5>
+                                <p class="text-muted mb-0">There is no data available for this table.</p>
+                            </div>
+                        </div>`,
+                    zeroRecords: `<div class="noresult" style="display: block;">
+                            <div class="text-center">
+                                <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" 
+                                        trigger="loop" 
+                                        colors="primary:#121331,secondary:#08a88a" 
+                                        style="width:75px;height:75px">
+                                </lord-icon>
+                                <h5 class="mt-2">Sorry! Data Not Found</h5>
+                                <p class="text-muted mb-0">We've searched but did not find any matching records for your search.</p>
+                            </div>
+                        </div>`
+                },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'email',
+                        name: 'email'
+                    },
+                    {
+                        data: 'role',
+                        name: 'role'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
+
+            // Tambah Data
+            $("#tambahData").click(function() {
+                $("#userForm").trigger("reset");
+                $("#id_user").val('');
+                $("#modalHeading").html("Add User");
+                $('#ajax-modal').modal('show');
+            });
+
+            // Submit Form
+            $('body').on('submit', '#userForm', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                var id = $("#id_user").val();
+                var url = id ? `/superadmin/user-data/update/${id}` : `/superadmin/user-data/store`;
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#userForm').trigger("reset");
+                        $('#ajax-modal').modal('hide');
+                        table.ajax.reload();
+
+                        // Custom success message
+                        Swal.fire({
+                            html: `
+                                <div class="mt-3">
+                                    <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
+                                    <div class="mt-4 pt-2 fs-15">
+                                        <h4>${response.success}</h4>
+                                    </div>
+                                </div>`,
+                            showCloseButton: true,
+                            showConfirmButton: true,
+                        });
+                    },
+                    error: function(response) {
+                        if (response.status === 422) {
+                            let errors = response.responseJSON.error;
+                            let errorMsg = '';
+                            $.each(errors, function(key, value) {
+                                errorMsg += `${value}<br>`;
+                            });
+                            Swal.fire('Error', errorMsg, 'error');
+                        } else if (response.status === 409) {
+                            Swal.fire('Error', response.responseJSON.error, 'error');
+                        } else {
+                            Swal.fire('Error',
+                                'An error occurred while processing the request.', 'error');
+                        }
+                    }
+                });
+            });
+
+
+            // // Submit Form & default sweatalert
+            // $('body').on('submit', '#userForm', function(e) {
+            //     e.preventDefault();
+            //     var formData = new FormData(this);
+            //     var id = $("#id_user").val();
+            //     var url = id ? `/superadmin/user-data/update/${id}` : `/superadmin/user-data/store`;
+
+            //     $.ajax({
+            //         type: 'POST',
+            //         url: url,
+            //         data: formData,
+            //         contentType: false,
+            //         processData: false,
+            //         success: function(response) {
+            //             $('#userForm').trigger("reset");
+            //             $('#ajax-modal').modal('hide');
+            //             table.ajax.reload();
+            //             Swal.fire('Success', response.success, 'success');
+            //         },
+            //         error: function(response) {
+            //             if (response.status === 422) {
+            //                 let errors = response.responseJSON.error;
+            //                 let errorMsg = '';
+            //                 $.each(errors, function(key, value) {
+            //                     errorMsg += `${value}<br>`;
+            //                 });
+            //                 Swal.fire('Error', errorMsg, 'error');
+            //             } else if (response.status === 409) {
+            //                 Swal.fire('Error', response.responseJSON.error, 'error');
+            //             } else {
+            //                 Swal.fire('Error',
+            //                     'An error occurred while processing the request.', 'error');
+            //             }
+            //         }
+            //     });
+            // });
+
+            // Edit Data
+            $('body').on('click', '#editData', function() {
+                var id = $(this).data('id');
+                $.get(`/superadmin/user-data/edit/${id}`, function(data) {
+                    Swal.fire({
+                        title: 'Are you sure you want to edit this data?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#id_user').val(data.id);
+                            $('#name').val(data.name);
+                            $('#email').val(data.email);
+                            $('#role').val(data.role);
+                            $('#modalHeading').html("Edit User");
+                            $('#ajax-modal').modal('show');
+                        }
+                    });
+                });
+            });
+
+            // Delete Data
+            $('body').on('click', '#deleteData', function() {
+                var id = $(this).data('id');
+                Swal.fire({
+                    html: `
+                        <div class="mt-2 text-center">
+                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                            <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                                <h4>Are you sure to delete this data?</h4>
+                                <p class="text-muted mx-4 mb-0">Data will be deleted permanently!</p>
+                            </div>
+                        </div>`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'No, cancel!',
+                    reverseButtons: true,
+                    // icon: 'warning'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: 'DELETE',
+                            url: `/superadmin/user-data/destroy/${id}`,
+                            success: function(response) {
+                                table.ajax.reload();
+                                Swal.fire('Deleted!', response.success, 'success');
+                            },
+                            error: function(response) {
+                                Swal.fire('Error', 'Failed to delete data.', 'error');
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 @endpush

@@ -24,17 +24,15 @@ Auth::routes();
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::prefix('superadmin')->group(function () {
-        Route::get('/user-data', [UserDataController::class, 'index'])->name('user-data.index');
+    Route::prefix('superadmin')->middleware('can:superadmin-only')->group(function () {
+        Route::prefix('user-data')->group(function () {
+            Route::get('/', [UserDataController::class, 'index'])->name('user-data.index');
+            Route::post('/store', [UserDataController::class, 'store'])->name('user-data.store');
+            Route::get('/edit/{id}', [UserDataController::class, 'edit'])->name('user-data.edit');
+            Route::post('/update/{id}', [UserDataController::class, 'update'])->name('user-data.update');
+            Route::delete('/destroy/{id}', [UserDataController::class, 'destroy'])->name('user-data.destroy');
+        });
     });
 });
-
-
-
-// Route::middleware(['middleware' => 'auth'], function () {
-//     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
-//     Route::prefix('dashboard-data')->group(function () {});
-// });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

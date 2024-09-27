@@ -121,7 +121,7 @@
                         <i class="ri-user-line"></i> <span data-key="t-widgets">User Data</span>
                     </a>
                 </li>
-
+                {{-- 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button"
                         aria-expanded="false" aria-controls="sidebarDashboards">
@@ -135,7 +135,7 @@
                             </li>
                         </ul>
                     </div>
-                </li> <!-- end User Management Menu -->
+                </li> <!-- end User Management Menu --> --}}
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarAuth" data-bs-toggle="collapse" role="button"
