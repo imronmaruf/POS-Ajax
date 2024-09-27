@@ -29,37 +29,39 @@
     </div>
     @can('superadmin-only')
         <div class="row">
-            <div class="col-xl-4">
+            <div class="col-lg-3">
                 <div class="card card-animate">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="avatar-sm flex-shrink-0">
                                 <span class="avatar-title bg-primary-subtle text-primary rounded-2 fs-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="feather feather-briefcase text-primary">
-                                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2">
-                                        </rect>
-                                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                        stroke-linejoin="round" class="feather feather-users text-primary material-shadow">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                                     </svg>
                                 </span>
                             </div>
-                            <div class="flex-grow-1 overflow-hidden ms-3">
-                                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Active Projects</p>
+                            <div class="flex-grow-1 overflow-hidden ms-3 ">
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Total Users</p>
                                 <div class="d-flex align-items-center mb-3">
-                                    <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value" data-target="825">825</span>
+                                    <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value"
+                                            data-target="{{ $userCount }}">0</span>
                                     </h4>
-                                    <span class="badge bg-danger-subtle text-danger fs-12"><i
-                                            class="ri-arrow-down-s-line fs-13 align-middle me-1"></i>5.02 %</span>
+                                    {{-- <span class="badge bg-danger-subtle text-danger fs-12"><i
+                                            class="ri-arrow-down-s-line fs-13 align-middle me-1"></i>5.02 %</span> --}}
                                 </div>
-                                <p class="text-muted text-truncate mb-0">Projects this month</p>
+
                             </div>
                         </div>
                     </div><!-- end card body -->
                 </div>
             </div><!-- end col -->
 
-            <div class="col-xl-4">
+            <div class="col-lg-3">
                 <div class="card card-animate">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -88,7 +90,7 @@
                 </div>
             </div><!-- end col -->
 
-            <div class="col-xl-4">
+            <div class="col-lg-3">
                 <div class="card card-animate">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -106,7 +108,8 @@
                                 <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Hours</p>
                                 <div class="d-flex align-items-center mb-3">
                                     <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value" data-target="168">168</span>h
-                                        <span class="counter-value" data-target="40">40</span>m</h4>
+                                        <span class="counter-value" data-target="40">40</span>m
+                                    </h4>
                                     <span class="badge bg-danger-subtle text-danger fs-12"><i
                                             class="ri-arrow-down-s-line fs-13 align-middle me-1"></i>10.35 %</span>
                                 </div>

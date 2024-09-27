@@ -22,7 +22,7 @@
                         <select id="role" name="role" class="form-select">
                             <option value="" selected>---Select Role---</option>
                             <option value="admin">Admin</option>
-                            <option value="user">User</option>
+                            <option value="superadmin">Superadmin</option>
                         </select>
                     </div>
                     <div class="modal-footer">
