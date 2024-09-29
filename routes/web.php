@@ -22,7 +22,9 @@ Route::get('/', function () {
 
 Auth::routes();
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    });
 
     Route::prefix('superadmin')->middleware('can:superadmin-only')->group(function () {
         Route::prefix('user-data')->group(function () {

@@ -6,11 +6,12 @@
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">User Data</li>
-                    <li class="breadcrumb-item active">Index</li>
+                    <li class="breadcrumb-item active">{{ ucfirst(basename(request()->route()->getPrefix())) }}</li>
+                    <li class="breadcrumb-item active">
+                        {{ ucfirst(str_replace(['index', 'show', 'create', 'edit'], ['Index', 'Show', 'Create', 'Edit'], request()->route()->getActionMethod())) }}
+                    </li>
                 </ol>
             </div>
-
         </div>
     </div>
 </div>

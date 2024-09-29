@@ -1,5 +1,8 @@
 @extends('auth.layouts.main')
 
+@push('title')
+    Sign In
+@endpush
 
 @section('content')
     <div class="auth-page-content">
