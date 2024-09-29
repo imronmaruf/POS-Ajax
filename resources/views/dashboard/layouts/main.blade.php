@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Dashboard | Velzon - Admin & Dashboard Template</title>
+    <title>@yield('title') Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="Themesbrand" name="author" />
@@ -22,9 +22,11 @@
     <link href="{{ asset('be/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
     <!-- App Css-->
     <link href="{{ asset('be/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+
     <!-- custom Css-->
     <link href="{{ asset('be/assets/css/custom.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('be/assets/css/datatables/datatables.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('be/assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 
@@ -81,6 +83,7 @@
 
     <!-- JAVASCRIPT -->
     <script src="{{ asset('be/assets/js/jquery.js') }}"></script>
+    {{-- <script src="{{ asset('be/assets/js/modal.js') }}"></script> --}}
     <script src="{{ asset('be/assets/js/datatables/datatables.min.js') }}"></script>
     <script src="{{ asset('be/assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('be/assets/libs/simplebar/simplebar.min.js') }}"></script>
@@ -89,17 +92,12 @@
     <script src="{{ asset('be/assets/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
     <script src="{{ asset('be/assets/js/plugins.js') }}"></script>
     <script src="{{ asset('be/assets/libs/swiper/swiper-bundle.min.js') }}"></script>
+    <script src="{{ asset('be/assets/libs/sweetalert2/sweetalert2.min.js') }}"></script>
+
     <script src="{{ asset('be/assets/js/pages/dashboard-ecommerce.init.js') }}"></script>
     <script src="{{ asset('be/assets/js/app.js') }}"></script>
 
-
-    <script>
-        $(document).ready(function() {
-            $('#table').DataTable({
-
-            });
-        });
-    </script>
+    @stack('js')
 
 </body>
 
