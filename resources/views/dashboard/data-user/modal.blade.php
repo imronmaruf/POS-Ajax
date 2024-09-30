@@ -21,8 +21,9 @@
                         <label for="role" class="form-label">Role</label>
                         <select id="role" name="role" class="form-select">
                             <option value="" selected>---Select Role---</option>
+                            <option value="owner">Owner</option>
                             <option value="admin">Admin</option>
-                            <option value="superadmin">Superadmin</option>
+                            <option value="cashier">Kasir</option>
                         </select>
                     </div>
                     <div class="modal-footer">

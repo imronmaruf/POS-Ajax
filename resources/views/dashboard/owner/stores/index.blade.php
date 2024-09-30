@@ -1,7 +1,7 @@
 @extends('dashboard.layouts.main')
 
 @push('title')
-    User Data Management
+    Stores
 @endpush
 
 @push('css')
@@ -13,8 +13,8 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">User Data</h5>
-                        <button id="tambahData" type="button" class="btn btn-primary">Add User</button>
+                        <h5 class="card-title mb-0">Stores</h5>
+                        <button id="tambahData" type="button" class="btn btn-primary">Add Store</button>
                     </div>
                 </div>
                 <div id="DataTables">
@@ -23,9 +23,11 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">No</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
+                                    <th>Owner</th>
+                                    <th>Store Name</th>
+                                    <th>Category Store</th>
+                                    <th>Logo</th>
+                                    <th>Address</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -37,13 +39,12 @@
         </div><!--end col-->
     </div>
 
-    @include('dashboard.data-user.modal')
+    @include('dashboard.owner.stores.modal')
 @endsection
 
 @push('js')
     <script>
         $(document).ready(function() {
-
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -53,7 +54,7 @@
             var table = $('#table').DataTable({
                 serverSide: true,
                 processing: true,
-                ajax: "{{ route('user-data.index') }}",
+                ajax: "{{ route('store-data.index') }}",
                 language: {
                     emptyTable: `<div class="noresult" style="display: block;">
                             <div class="text-center">
@@ -84,16 +85,27 @@
                         className: 'text-center'
                     },
                     {
+                        data: 'owner.name',
+                        name: 'owner.name'
+                    },
+                    {
                         data: 'name',
                         name: 'name'
                     },
                     {
-                        data: 'email',
-                        name: 'email'
+                        data: 'category.name',
+                        name: 'category.name'
                     },
                     {
-                        data: 'role',
-                        name: 'role'
+                        data: 'logo',
+                        name: 'logo',
+                        render: function(data) {
+                            return `<img src="/storage/${data}" class="img-thumbnail" style="width: 200px; height: auto;">`;
+                        }
+                    },
+                    {
+                        data: 'address',
+                        name: 'address'
                     },
                     {
                         data: 'action',
@@ -104,41 +116,50 @@
                 ]
             });
 
-            // Tambah Data
-            $("#tambahData").click(function() {
-                $("#userForm").trigger("reset");
-                $("#id_user").val('');
-                $("#modalHeading").html("Add User");
+            // Tambah Store
+            $('#tambahData').click(function() {
+                $('#modalHeading').text('Add Store');
+                $('#storeForm')[0].reset(); // Reset the form
+                $('#store_id').val(''); // Reset the store_id field
                 $('#ajax-modal').modal('show');
+
+                $.get("{{ route('store-data.create') }}", function(data) {
+                    $('#category_id').empty().append(
+                        '<option value="">---Select Category---</option>');
+                    $.each(data, function(index, category) {
+                        $('#category_id').append('<option value="' + category.id + '">' +
+                            category.name + '</option>');
+                    });
+                });
             });
 
-            // Submit Form
-            $('body').on('submit', '#userForm', function(e) {
+
+            // Submit Form (Tambah atau Update Store)
+            $('body').on('submit', '#storeForm', function(e) {
                 e.preventDefault();
                 var formData = new FormData(this);
-                var id = $("#id_user").val();
-                var url = id ? `/user-data/update/${id}` : `/user-data/store`;
+                var storeId = $('#store_id').val();
+                var url = storeId ? "{{ url('store-data/update') }}/" + storeId :
+                    "{{ route('store-data.store') }}";
 
                 $.ajax({
-                    type: 'POST',
                     url: url,
+                    method: "POST",
                     data: formData,
+                    cache: false,
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        $('#userForm').trigger("reset");
                         $('#ajax-modal').modal('hide');
-                        table.ajax.reload();
+                        table.ajax.reload(); // Reload the DataTable
 
-                        // Custom success message
                         Swal.fire({
-                            html: `
-                                <div class="mt-3">
-                                    <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
-                                    <div class="mt-4 pt-2 fs-15">
-                                        <h4>${response.success}</h4>
-                                    </div>
-                                </div>`,
+                            html: `<div class="mt-3">
+                            <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
+                            <div class="mt-4 pt-2 fs-15">
+                                <h4>${response.success}</h4>
+                            </div>
+                        </div>`,
                             showCloseButton: true,
                             showConfirmButton: true,
                         });
@@ -151,8 +172,6 @@
                                 errorMsg += `${value}<br>`;
                             });
                             Swal.fire('Error', errorMsg, 'error');
-                        } else if (response.status === 409) {
-                            Swal.fire('Error', response.responseJSON.error, 'error');
                         } else {
                             Swal.fire('Error',
                                 'An error occurred while processing the request.', 'error');
@@ -161,48 +180,10 @@
                 });
             });
 
-
-            // // Submit Form & default sweatalert
-            // $('body').on('submit', '#userForm', function(e) {
-            //     e.preventDefault();
-            //     var formData = new FormData(this);
-            //     var id = $("#id_user").val();
-            //     var url = id ? `/superadmin/user-data/update/${id}` : `/superadmin/user-data/store`;
-
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: url,
-            //         data: formData,
-            //         contentType: false,
-            //         processData: false,
-            //         success: function(response) {
-            //             $('#userForm').trigger("reset");
-            //             $('#ajax-modal').modal('hide');
-            //             table.ajax.reload();
-            //             Swal.fire('Success', response.success, 'success');
-            //         },
-            //         error: function(response) {
-            //             if (response.status === 422) {
-            //                 let errors = response.responseJSON.error;
-            //                 let errorMsg = '';
-            //                 $.each(errors, function(key, value) {
-            //                     errorMsg += `${value}<br>`;
-            //                 });
-            //                 Swal.fire('Error', errorMsg, 'error');
-            //             } else if (response.status === 409) {
-            //                 Swal.fire('Error', response.responseJSON.error, 'error');
-            //             } else {
-            //                 Swal.fire('Error',
-            //                     'An error occurred while processing the request.', 'error');
-            //             }
-            //         }
-            //     });
-            // });
-
-            // Edit Data
+            // Edit Store
             $('body').on('click', '#editData', function() {
                 var id = $(this).data('id');
-                $.get(`/user-data/edit/${id}`, function(data) {
+                $.get("{{ url('store-data/edit') }}/" + id, function(data) {
                     Swal.fire({
                         title: 'Are you sure you want to edit this data?',
                         icon: 'warning',
@@ -212,44 +193,51 @@
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $('#id_user').val(data.id);
-                            $('#name').val(data.name);
-                            $('#email').val(data.email);
-                            $('#role').val(data.role);
-                            $('#modalHeading').html("Edit User");
+                            $('#store_id').val(data.store.id);
+                            $('#name').val(data.store.name);
+                            $('#address').val(data.store.address);
+                            $('#category_id').empty().append(
+                                '<option value="">Select Category</option>');
+
+                            $.each(data.categories, function(index, category) {
+                                $('#category_id').append('<option value="' +
+                                    category.id + '">' + category.name +
+                                    '</option>');
+                            });
+
+                            $('#category_id').val(data.store.category_id);
+                            $('#modalHeading').html("Edit Store");
                             $('#ajax-modal').modal('show');
                         }
                     });
                 });
             });
 
-            // Delete Data
+            // Delete Store
             $('body').on('click', '#deleteData', function() {
                 var id = $(this).data('id');
                 Swal.fire({
-                    html: `
-                        <div class="mt-2 text-center">
-                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
-                            <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                <h4>Are you sure to delete this data?</h4>
-                                <p class="text-muted mx-4 mb-0">Data will be deleted permanently!</p>
-                            </div>
-                        </div>`,
+                    html: `<div class="mt-2 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Are you sure to delete this data?</h4>
+                        <p class="text-muted mx-4 mb-0">Data will be deleted permanently!</p>
+                    </div>
+                </div>`,
                     showCancelButton: true,
                     confirmButtonText: 'Yes, delete it!',
                     cancelButtonText: 'No, cancel!',
                     reverseButtons: true,
-                    // icon: 'warning'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            type: 'DELETE',
-                            url: `/user-data/destroy/${id}`,
+                            url: "{{ url('store-data/destroy') }}/" + id,
+                            method: 'DELETE',
                             success: function(response) {
-                                table.ajax.reload();
+                                table.ajax.reload(); // Reload the DataTable
                                 Swal.fire('Deleted!', response.success, 'success');
                             },
-                            error: function(response) {
+                            error: function() {
                                 Swal.fire('Error', 'Failed to delete data.', 'error');
                             }
                         });

@@ -15,7 +15,7 @@ class UserDataController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $dataUser = User::where('role', '!=', 'superadmin')->get();
+            $dataUser = User::where('role', '!=', 'owner')->get();
 
             return DataTables::of($dataUser)
                 ->addIndexColumn()

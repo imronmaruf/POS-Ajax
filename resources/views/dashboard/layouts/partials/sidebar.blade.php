@@ -112,8 +112,42 @@
                     </div>
                 </li> <!-- end Dashboard Menu -->
 
-                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">User Management</span>
+                <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">General
+                        Management</span>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link menu-link @if (Route::is('store-categories.index')) {{ 'active' }} @endif"
+                        href="#sidebarStores" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                        aria-controls="sidebarStores">
+                        <i class="ri-store-line"></i> <span data-key="t-stores">Stores</span>
+                    </a>
+                    <div class="collapse menu-dropdown" id="sidebarStores">
+                        <ul class="nav nav-sm flex-column">
+                            <li class="nav-item ">
+                                <a href="{{ route('store-categories.index') }}"
+                                    class="nav-link @if (Route::is('store-categories.index')) {{ 'active' }} @endif"
+                                    data-key="t-storeCategory">
+                                    Store Category
+                                </a>
+                            </li>
+                            <li class="nav-item ">
+                                <a href="{{ route('store-data.index') }}"
+                                    class="nav-link @if (Route::is('store-data.index')) {{ 'active' }} @endif"
+                                    data-key="t-storeData">
+                                    Store Data
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> <!-- end Dashboard Menu -->
+
+                {{-- <li class="nav-item">
+                    <a class="nav-link menu-link @if (Route::is('store-categories.index')) {{ 'active' }} @endif"
+                        href="{{ route('store-categories.index') }}">
+                        <i class="ri-store-line"></i> <span data-key="t-widgets">Store Categori</span>
+                    </a>
+                </li> --}}
 
                 <li class="nav-item">
                     <a class="nav-link menu-link @if (Route::is('user-data.index')) {{ 'active' }} @endif"

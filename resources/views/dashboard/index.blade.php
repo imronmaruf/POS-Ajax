@@ -27,7 +27,7 @@
         </div><!--end col-->
 
     </div>
-    @can('superadmin-only')
+    @can('owner-only')
         <div class="row">
             <div class="col-lg-3">
                 <div class="card card-animate">

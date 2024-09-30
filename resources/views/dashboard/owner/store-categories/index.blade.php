@@ -13,8 +13,8 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">User Data</h5>
-                        <button id="tambahData" type="button" class="btn btn-primary">Add User</button>
+                        <h5 class="card-title mb-0">Store Categories</h5>
+                        <button id="tambahData" type="button" class="btn btn-primary">Add Category</button>
                     </div>
                 </div>
                 <div id="DataTables">
@@ -24,8 +24,7 @@
                                 <tr>
                                     <th class="text-center">No</th>
                                     <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
+                                    <th>Created_at</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -37,7 +36,7 @@
         </div><!--end col-->
     </div>
 
-    @include('dashboard.data-user.modal')
+    @include('dashboard.owner.store-categories.modal')
 @endsection
 
 @push('js')
@@ -53,7 +52,7 @@
             var table = $('#table').DataTable({
                 serverSide: true,
                 processing: true,
-                ajax: "{{ route('user-data.index') }}",
+                ajax: "{{ route('store-categories.index') }}",
                 language: {
                     emptyTable: `<div class="noresult" style="display: block;">
                             <div class="text-center">
@@ -88,12 +87,17 @@
                         name: 'name'
                     },
                     {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'role',
-                        name: 'role'
+                        data: 'created_at',
+                        name: 'created_at',
+                        render: function(data) {
+                            let date = new Date(data);
+                            let options = {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                            };
+                            return date.toLocaleDateString('en-GB', options);
+                        }
                     },
                     {
                         data: 'action',
@@ -106,18 +110,18 @@
 
             // Tambah Data
             $("#tambahData").click(function() {
-                $("#userForm").trigger("reset");
-                $("#id_user").val('');
-                $("#modalHeading").html("Add User");
+                $("#storeCategoryForm").trigger("reset");
+                $("#category_id").val('');
+                $("#modalHeading").html("Add Category");
                 $('#ajax-modal').modal('show');
             });
 
             // Submit Form
-            $('body').on('submit', '#userForm', function(e) {
+            $('body').on('submit', '#storeCategoryForm', function(e) {
                 e.preventDefault();
                 var formData = new FormData(this);
-                var id = $("#id_user").val();
-                var url = id ? `/user-data/update/${id}` : `/user-data/store`;
+                var id = $("#category_id").val();
+                var url = id ? `/store-categories/update/${id}` : `/store-categories/store`;
 
                 $.ajax({
                     type: 'POST',
@@ -126,19 +130,18 @@
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        $('#userForm').trigger("reset");
+                        $('#storeCategoryForm').trigger("reset");
                         $('#ajax-modal').modal('hide');
                         table.ajax.reload();
 
                         // Custom success message
                         Swal.fire({
-                            html: `
-                                <div class="mt-3">
-                                    <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
-                                    <div class="mt-4 pt-2 fs-15">
-                                        <h4>${response.success}</h4>
-                                    </div>
-                                </div>`,
+                            html: `<div class="mt-3">
+                        <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
+                        <div class="mt-4 pt-2 fs-15">
+                            <h4>${response.success}</h4>
+                        </div>
+                    </div>`,
                             showCloseButton: true,
                             showConfirmButton: true,
                         });
@@ -161,48 +164,10 @@
                 });
             });
 
-
-            // // Submit Form & default sweatalert
-            // $('body').on('submit', '#userForm', function(e) {
-            //     e.preventDefault();
-            //     var formData = new FormData(this);
-            //     var id = $("#id_user").val();
-            //     var url = id ? `/superadmin/user-data/update/${id}` : `/superadmin/user-data/store`;
-
-            //     $.ajax({
-            //         type: 'POST',
-            //         url: url,
-            //         data: formData,
-            //         contentType: false,
-            //         processData: false,
-            //         success: function(response) {
-            //             $('#userForm').trigger("reset");
-            //             $('#ajax-modal').modal('hide');
-            //             table.ajax.reload();
-            //             Swal.fire('Success', response.success, 'success');
-            //         },
-            //         error: function(response) {
-            //             if (response.status === 422) {
-            //                 let errors = response.responseJSON.error;
-            //                 let errorMsg = '';
-            //                 $.each(errors, function(key, value) {
-            //                     errorMsg += `${value}<br>`;
-            //                 });
-            //                 Swal.fire('Error', errorMsg, 'error');
-            //             } else if (response.status === 409) {
-            //                 Swal.fire('Error', response.responseJSON.error, 'error');
-            //             } else {
-            //                 Swal.fire('Error',
-            //                     'An error occurred while processing the request.', 'error');
-            //             }
-            //         }
-            //     });
-            // });
-
             // Edit Data
             $('body').on('click', '#editData', function() {
                 var id = $(this).data('id');
-                $.get(`/user-data/edit/${id}`, function(data) {
+                $.get(`/store-categories/edit/${id}`, function(data) {
                     Swal.fire({
                         title: 'Are you sure you want to edit this data?',
                         icon: 'warning',
@@ -212,11 +177,9 @@
                         reverseButtons: true
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $('#id_user').val(data.id);
+                            $('#category_id').val(data.id);
                             $('#name').val(data.name);
-                            $('#email').val(data.email);
-                            $('#role').val(data.role);
-                            $('#modalHeading').html("Edit User");
+                            $('#modalHeading').html("Edit Category");
                             $('#ajax-modal').modal('show');
                         }
                     });
@@ -227,24 +190,22 @@
             $('body').on('click', '#deleteData', function() {
                 var id = $(this).data('id');
                 Swal.fire({
-                    html: `
-                        <div class="mt-2 text-center">
-                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
-                            <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
-                                <h4>Are you sure to delete this data?</h4>
-                                <p class="text-muted mx-4 mb-0">Data will be deleted permanently!</p>
-                            </div>
-                        </div>`,
+                    html: `<div class="mt-2 text-center">
+                <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                    <h4>Are you sure to delete this data?</h4>
+                    <p class="text-muted mx-4 mb-0">Data will be deleted permanently!</p>
+                </div>
+            </div>`,
                     showCancelButton: true,
                     confirmButtonText: 'Yes, delete it!',
                     cancelButtonText: 'No, cancel!',
                     reverseButtons: true,
-                    // icon: 'warning'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
                             type: 'DELETE',
-                            url: `/user-data/destroy/${id}`,
+                            url: `/store-categories/destroy/${id}`,
                             success: function(response) {
                                 table.ajax.reload();
                                 Swal.fire('Deleted!', response.success, 'success');
@@ -256,6 +217,7 @@
                     }
                 });
             });
+
         });
     </script>
 @endpush
