@@ -3,33 +3,41 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Models\User;
+use App\Models\Owner\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class UserDataController extends Controller
 {
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $dataUser = User::where('role', '!=', 'owner')->get();
+            $dataUser = User::whereIn('role', ['admin', 'cashier'])
+                ->with('store')
+                ->get();
 
             return DataTables::of($dataUser)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
                     return '<div class="d-flex gap-2">
-                                <button type="button" id="editData" class="btn btn-sm btn-success edit-item-btn" data-id="' . $row->id . '">Edit</button>
-                                <button type="button" id="deleteData" class="btn btn-sm btn-danger remove-item-btn" data-id="' . $row->id . '">Remove</button>
-                            </div>';
+                            <button type="button" id="editData" class="btn btn-sm btn-success edit-item-btn" data-id="' . $row->id . '">Edit</button>
+                            <button type="button" id="deleteData" class="btn btn-sm btn-danger delete-item-btn" data-id="' . $row->id . '">Delete</button>
+                        </div>';
                 })
-                ->rawColumns(['action'])
                 ->make(true);
         }
 
         return view('dashboard.data-user.index');
+    }
+
+    public function create()
+    {
+        $dataStore = Store::select('id', 'name')->get();
+        return response()->json($dataStore, 200);
     }
 
     public function store(Request $request)
@@ -38,6 +46,7 @@ class UserDataController extends Controller
             'name'  => 'required',
             'email' => 'required|email|unique:users',
             'role'  => 'required',
+            'store_id' => 'required|exists:stores,id',
         ]);
 
         if ($validator->fails()) {
@@ -55,6 +64,7 @@ class UserDataController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->role = $request->role;
+            $user->store_id = $request->store_id;
             $user->password = Hash::make($request->name); // default password is name
             $user->save();
 
@@ -69,8 +79,12 @@ class UserDataController extends Controller
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        return response()->json($user);
+        $user = User::with('store')->findOrFail($id);
+        $stores = Store::select('id', 'name')->get();
+        return response()->json([
+            'user' => $user,
+            'stores' => $stores
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -79,6 +93,7 @@ class UserDataController extends Controller
             'name'  => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
             'role'  => 'required',
+            'store_id' => 'required|exists:stores,id',
         ]);
 
         if ($validator->fails()) {
@@ -86,7 +101,6 @@ class UserDataController extends Controller
         }
 
         $user = User::findOrFail($id);
-
         try {
             DB::beginTransaction();
 

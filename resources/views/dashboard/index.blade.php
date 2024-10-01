@@ -1,6 +1,7 @@
 @extends('dashboard.layouts.main')
 
 @push('title')
+    Dashboard {{ ucfirst(Auth::user()->role ?? '') }}
 @endpush
 
 @push('css')
@@ -69,24 +70,24 @@
                                 <span class="avatar-title bg-warning-subtle text-warning rounded-2 fs-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="feather feather-award text-warning">
-                                        <circle cx="12" cy="8" r="7"></circle>
-                                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                                        stroke-linejoin="round" class="feather feather-shopping-bag text-warning">
+                                        <path d="M6 2l.01 6H18V2H6z"></path>
+                                        <path d="M18 6l3 12H3L6 6"></path>
+                                        <path d="M10 10V4a4 4 0 1 1 8 0v6"></path>
                                     </svg>
                                 </span>
                             </div>
-                            <div class="flex-grow-1 ms-3">
-                                <p class="text-uppercase fw-medium text-muted mb-3">New Leads</p>
+
+                            <div class="flex-grow-1 overflow-hidden ms-3 ">
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Store</p>
                                 <div class="d-flex align-items-center mb-3">
                                     <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value"
-                                            data-target="7522">7,522</span></h4>
-                                    <span class="badge bg-success-subtle text-success fs-12"><i
-                                            class="ri-arrow-up-s-line fs-13 align-middle me-1"></i>3.58 %</span>
+                                            data-target="{{ $storeCount }}">0</span>
+                                    </h4>
                                 </div>
-                                <p class="text-muted mb-0">Leads this month</p>
                             </div>
                         </div>
-                    </div><!-- end card body -->
+                    </div>
                 </div>
             </div><!-- end col -->
 

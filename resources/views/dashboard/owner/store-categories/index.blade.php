@@ -1,7 +1,7 @@
 @extends('dashboard.layouts.main')
 
 @push('title')
-    User Data Management
+    Store Category
 @endpush
 
 @push('css')

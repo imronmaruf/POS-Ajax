@@ -77,24 +77,16 @@
         <div class="container-fluid">
             <div id="two-column-menu">
             </div>
+
             <ul class="navbar-nav" id="navbar-nav">
                 <li class="menu-title"><span data-key="t-menu">Menu</span></li>
                 <li class="nav-item">
                     <a class="nav-link menu-link @if (Route::is('dashboard')) {{ 'active' }} @endif "
-                        href="#sidebarDashboards" data-bs-toggle="collapse" role="button" aria-expanded="false"
-                        aria-controls="sidebarDashboards">
-                        <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Dashboards</span>
+                        href="{{ route('dashboard') }}">
+                        <i class="ri-dashboard-2-line"></i> <span data-key="t-widgets">Dashboard</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarDashboards">
-                        <ul class="nav nav-sm flex-column">
-                            <li class="nav-item">
-                                <a href="{{ route('dashboard') }}" class="nav-link" data-key="t-analytics">
-                                    Analytics
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li> <!-- end Dashboard Menu -->
+                </li>
+
 
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button"
@@ -117,12 +109,13 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link menu-link @if (Route::is('store-categories.index')) {{ 'active' }} @endif"
-                        href="#sidebarStores" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                    <a class="nav-link menu-link @if (Route::is('store-categories.index') || Route::is('store-data.index')) {{ 'active' }} @endif"
+                        href="#sidebarStores" data-bs-toggle="collapse" role="button" aria-expanded="true"
                         aria-controls="sidebarStores">
                         <i class="ri-store-line"></i> <span data-key="t-stores">Stores</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarStores">
+                    <div class="collapse menu-dropdown @if (Route::is('store-categories.index') || Route::is('store-data.index')) {{ 'show' }} @endif"
+                        id="sidebarStores">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item ">
                                 <a href="{{ route('store-categories.index') }}"

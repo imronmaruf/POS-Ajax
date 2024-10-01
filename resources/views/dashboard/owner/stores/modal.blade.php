@@ -20,7 +20,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="category_id" class="col-form-label">Category</label>
-                                <select class="form-control" id="category_id" name="category_id" required>
+                                <select class="form-select" id="category_id" name="category_id" required>
                                     <option value="">Select Category</option>
                                 </select>
                             </div>

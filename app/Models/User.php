@@ -30,7 +30,7 @@ class User extends Authenticatable
     // Relasi untuk admin dan cashier
     public function store()
     {
-        return $this->belongsTo(Store::class);
+        return $this->belongsTo(Store::class, 'store_id');
     }
 
     protected $hidden = [

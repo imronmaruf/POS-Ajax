@@ -26,6 +26,12 @@
                             <option value="cashier">Kasir</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="store_id" class="form-label">Store</label>
+                        <select id="store_id" name="store_id" class="form-select">
+
+                        </select>
+                    </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Save</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

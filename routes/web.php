@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('user-data')->middleware('can:owner-only')->group(function () {
         Route::get('/', [UserDataController::class, 'index'])->name('user-data.index');
         Route::post('/store', [UserDataController::class, 'store'])->name('user-data.store');
+        Route::get('/create', [UserDataController::class, 'create'])->name('user-data.create');
         Route::get('/edit/{id}', [UserDataController::class, 'edit'])->name('user-data.edit');
         Route::post('/update/{id}', [UserDataController::class, 'update'])->name('user-data.update');
         Route::delete('/destroy/{id}', [UserDataController::class, 'destroy'])->name('user-data.destroy');

@@ -21,14 +21,15 @@ class StoreController extends Controller
             return DataTables::of($dataStore)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    return '<div class="d-flex gap-2">
-                            <button type="button" id="editData" class="btn btn-sm btn-success edit-item-btn" data-id="' . $row->id . '">Edit</button>
-                            <button type="button" id="deleteData" class="btn btn-sm btn-danger remove-item-btn" data-id="' . $row->id . '">Remove</button>
-                        </div>';
+                    return '<div class="d-flex gap-2 justify-content-center">
+                                <button type="button" id="editData" class="btn btn-sm btn-success edit-item-btn" data-id="' . $row->id . '">Edit</button>
+                                <button type="button" id="deleteData" class="btn btn-sm btn-danger remove-item-btn" data-id="' . $row->id . '">Remove</button>
+                            </div>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
+
         $dataStoreCategory = StoreCategory::all();
         return view('dashboard.owner.stores.index', compact('dataStoreCategory'));
     }
@@ -46,6 +47,7 @@ class StoreController extends Controller
             'address'    => 'required',
             'logo'       => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required|exists:store_categories,id',
+            'store_id'   => 'required|exists:stores,id',
         ]);
 
         if ($validator->fails()) {
@@ -66,16 +68,16 @@ class StoreController extends Controller
 
             $logoPath = $request->file('logo')->store('logo', 'public');
 
-            $dataStore = new Store();
-            $dataStore->name = $request->name;
-            $dataStore->owner_id = $owner->id;
-            $dataStore->address = $request->address;
-            $dataStore->logo = $logoPath;
-            $dataStore->category_id = $request->category_id;
-            $dataStore->save();
+            Store::create([
+                'name' => $request->name,
+                'owner_id' => $owner->id,
+                'address' => $request->address,
+                'logo' => $logoPath,
+                'category_id' => $request->category_id,
+
+            ]);
 
             DB::commit();
-
             return response()->json(['success' => 'Store added successfully'], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -87,6 +89,7 @@ class StoreController extends Controller
     {
         $dataStore = Store::with('category')->findOrFail($id);
         $categories = StoreCategory::select('id', 'name')->get();
+
         return response()->json([
             'store' => $dataStore,
             'categories' => $categories
@@ -114,20 +117,18 @@ class StoreController extends Controller
             DB::beginTransaction();
 
             $dataStore = Store::findOrFail($id);
-
-            $dataStore->name = $request->name;
-            $dataStore->address = $request->address;
-            $dataStore->category_id = $request->category_id;
+            $dataStore->update([
+                'name' => $request->name,
+                'address' => $request->address,
+                'category_id' => $request->category_id,
+            ]);
 
             if ($request->hasFile('logo')) {
                 $logoPath = $request->file('logo')->store('logo', 'public');
-                $dataStore->logo = $logoPath;
+                $dataStore->update(['logo' => $logoPath]);
             }
 
-            $dataStore->save();
-
             DB::commit();
-
             return response()->json(['success' => 'Store updated successfully'], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -137,8 +138,18 @@ class StoreController extends Controller
 
     public function destroy($id)
     {
-        $storeData = Store::findOrFail($id);
-        $storeData->delete();
-        return response()->json(['success' => 'Store deleted successfully']);
+        try {
+            $storeData = Store::findOrFail($id);
+            $logoPath = public_path($storeData->logo);
+
+            $storeData->delete();
+            if (file_exists($logoPath)) {
+                unlink($logoPath);
+            }
+
+            return response()->json(['success' => 'Store deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete store.'], 500);
+        }
     }
 }
