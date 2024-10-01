@@ -99,22 +99,21 @@
                                 <span class="avatar-title bg-info-subtle text-info rounded-2 fs-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="feather feather-clock text-info">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                        stroke-linejoin="round" class="feather feather-shopping-bag text-info">
+                                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                                        <path d="M16 10a4 4 0 0 1-8 0"></path>
                                     </svg>
                                 </span>
                             </div>
-                            <div class="flex-grow-1 overflow-hidden ms-3">
-                                <p class="text-uppercase fw-medium text-muted text-truncate mb-3">Total Hours</p>
+
+                            <div class="flex-grow-1 overflow-hidden ms-3 ">
+                                <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Store</p>
                                 <div class="d-flex align-items-center mb-3">
-                                    <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value" data-target="168">168</span>h
-                                        <span class="counter-value" data-target="40">40</span>m
+                                    <h4 class="fs-4 flex-grow-1 mb-0"><span class="counter-value"
+                                            data-target="{{ $productCount }}">0</span>
                                     </h4>
-                                    <span class="badge bg-danger-subtle text-danger fs-12"><i
-                                            class="ri-arrow-down-s-line fs-13 align-middle me-1"></i>10.35 %</span>
                                 </div>
-                                <p class="text-muted text-truncate mb-0">Work this month</p>
                             </div>
                         </div>
                     </div><!-- end card body -->

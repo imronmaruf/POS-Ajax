@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -53,6 +54,25 @@ Route::middleware('auth')->group(function () {
         Route::post('/update/{id}', [StoreController::class, 'update'])->name('store-data.update');
         Route::delete('/destroy/{id}', [StoreController::class, 'destroy'])->name('store-data.destroy');
     });
+
+    Route::prefix('product')->middleware('can:owner-only,admin-only')->group(function () {
+        Route::get('/', [ProductController::class, 'index'])->name('product.index');
+        Route::get('/create', [ProductController::class, 'create'])->name('product.create');
+        Route::post('/store', [ProductController::class, 'store'])->name('product.store');
+        Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
+        Route::post('/update/{id}', [ProductController::class, 'update'])->name('product.update');
+        Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+    });
+
+
+    // Route::prefix('product')->middleware('can:owner-only')->group(function () {
+    //     Route::get('/', [ProductController::class, 'index'])->name('product.index');
+    //     Route::get('/create', [ProductController::class, 'create'])->name('product.create');
+    //     Route::post('/store', [ProductController::class, 'store'])->name('product.store');
+    //     Route::get('/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
+    //     Route::post('/update/{id}', [ProductController::class, 'update'])->name('product.update');
+    //     Route::delete('/destroy/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+    // });
 });
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

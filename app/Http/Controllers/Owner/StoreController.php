@@ -47,7 +47,6 @@ class StoreController extends Controller
             'address'    => 'required',
             'logo'       => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required|exists:store_categories,id',
-            'store_id'   => 'required|exists:stores,id',
         ]);
 
         if ($validator->fails()) {
@@ -104,6 +103,8 @@ class StoreController extends Controller
             'logo'       => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required|exists:store_categories,id',
         ]);
+
+
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);

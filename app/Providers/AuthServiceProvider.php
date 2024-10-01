@@ -29,20 +29,5 @@ class AuthServiceProvider extends ServiceProvider
         foreach (['owner', 'admin', 'cashier'] as $role) {
             Gate::define("{$role}-only", fn(User $user) => $user->role === $role);
         }
-
-        // // Gate for owner only
-        // Gate::define('owner-only', function (User $user) {
-        //     return $user->role === 'owner';
-        // });
-
-        // // Gate for admin only
-        // Gate::define('admin-only', function (User $user) {
-        //     return $user->role === 'admin';
-        // });
-
-
-        // Gate::define('cashier-only', function (User $user) {
-        //     return $user->role === 'cashier';
-        // });
     }
 }

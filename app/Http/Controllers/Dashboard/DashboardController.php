@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Owner\Store;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Owner\Product;
 
 class DashboardController extends Controller
 {
@@ -13,6 +14,7 @@ class DashboardController extends Controller
     {
         $userCount = User::where('role', '!=', 'owner')->count();
         $storeCount = Store::count();
-        return view('dashboard.index', compact('userCount', 'storeCount'));
+        $productCount = Product::count();
+        return view('dashboard.index', compact('userCount', 'storeCount', 'productCount'));
     }
 }
