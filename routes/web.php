@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/destroy/{id}', [StoreController::class, 'destroy'])->name('store-data.destroy');
     });
 
-    Route::prefix('product')->middleware('can:owner-only,admin-only')->group(function () {
+    Route::prefix('product')->middleware('role:owner,admin')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('product.index');
         Route::get('/create', [ProductController::class, 'create'])->name('product.create');
         Route::post('/store', [ProductController::class, 'store'])->name('product.store');

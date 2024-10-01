@@ -29,8 +29,17 @@
 
                     <div class="mb-3">
                         <label for="price" class="form-label">Price</label>
-                        <input type="number" id="price" name="price" class="form-control">
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="text" id="price" name="price" class="form-control"
+                                inputmode="numeric">
+                        </div>
                     </div>
+
+                    {{-- <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" id="price" name="price" class="form-control">
+                    </div> --}}
 
                     <div class="mb-3">
                         <label for="stock" class="form-label">Stock</label>
@@ -51,3 +60,49 @@
         </div>
     </div>
 </div>
+
+<script>
+    function formatRupiah(angka, prefix) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+        return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
+    }
+
+    // Function to handle input event
+    function formatCurrency(input) {
+        var value = input.value;
+        input.value = formatRupiah(value, 'Rp ');
+    }
+
+    // Function to handle focus event
+    function clearFormat(input) {
+        input.value = input.value.replace(/[^\d]/g, '');
+    }
+
+    // Add event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        var priceInput = document.getElementById('price');
+
+        priceInput.addEventListener('input', function() {
+            formatCurrency(this);
+        });
+
+        priceInput.addEventListener('focus', function() {
+            clearFormat(this);
+        });
+
+        priceInput.addEventListener('blur', function() {
+            formatCurrency(this);
+        });
+    });
+</script>

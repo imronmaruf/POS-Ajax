@@ -102,7 +102,13 @@
                     },
                     {
                         data: 'price',
-                        name: 'price'
+                        name: 'price',
+                        render: function(data, type, row) {
+                            if (type === 'display' || type === 'filter') {
+                                return 'Rp. ' + new Intl.NumberFormat('id-ID').format(data);
+                            }
+                            return data;
+                        }
                     },
                     {
                         data: 'stock',
@@ -148,6 +154,8 @@
             $('body').on('submit', '#productForm', function(e) {
                 e.preventDefault();
                 var formData = new FormData(this);
+                var price = $('#price').val().replace(/[^\d]/g, '');
+                formData.set('price', price);
                 var productId = $('#product_id').val();
                 var url = productId ? "{{ url('product/update') }}/" + productId :
                     "{{ route('product.store') }}";

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignUuid('store_id');
             $table->string('name', 100);
             $table->string('category', 50);
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10);
             $table->string('image');
             $table->integer('stock');
             $table->timestamps();
